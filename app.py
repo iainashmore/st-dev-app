@@ -17,7 +17,7 @@ g = None
 st.set_page_config(page_title="Moving Python", page_icon=None, layout="wide", initial_sidebar_state="auto", menu_items=None)
 
 
-st.title("Python Dev Widget")
+st.title("Python Development App")
 variables_df = pd.DataFrame(columns=['Name','Value'])
 fileNames = []
 repoNames = []
@@ -75,13 +75,13 @@ with st.expander("Global Variables", expanded=False):
     st.download_button(label="Download Variables",data= convert_df(edited_df),file_name='variables.csv',mime='text/csv',)
 
 
-
-uploaded_file = st.file_uploader("Open .py file:")
-placeholder = "Write python code here..."
-if uploaded_file is not None:
-    stringio = StringIO(uploaded_file.getvalue().decode("utf-8"))
-    text = stringio.read()
-    selectedCode = text
+with st.expander("Upload Code", expanded=False):
+    uploaded_file = st.file_uploader("Open .py file:")
+    placeholder = "Write python code here..."
+    if uploaded_file is not None:
+        stringio = StringIO(uploaded_file.getvalue().decode("utf-8"))
+        text = stringio.read()
+        selectedCode = text
 
 content = st_ace(value=selectedCode, font_size=11, wrap=True)
 
