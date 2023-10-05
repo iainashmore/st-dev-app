@@ -8,16 +8,20 @@ from streamlit_ace import st_ace
 from io import StringIO
 from github import Github
 from github import Auth
+from code_editor import code_editor
 
 # using an access token
 
 g = None
 
+def replaceVariables(text):
+    result = text 
+    for i in edited_df.index:
+        result = result.replace("{{" + edited_df['Name'][i] + "}}",edited_df['Value'][i])
+    return result
+
 
 st.set_page_config(page_title="Moving Python", page_icon=None, layout="wide", initial_sidebar_state="auto", menu_items=None)
-
-
-st.title("Python Dev App")
 variables_df = pd.DataFrame(columns=['Name','Value'])
 fileNames = []
 repoNames = []
@@ -25,7 +29,7 @@ repoNames = []
 saveFileName = ""
 selectedFileName = ""
 selectedRepoName = None
-selectedCode = "Write your python code here..."
+selectedCode = "print('HelloWorld')"
 def convert_df(df):
     return df.to_csv().encode('utf-8')
 if 'token' not in st.session_state:
@@ -60,7 +64,7 @@ with st.expander("GitHub Access", expanded=False):
                 if selectedFileName:
                     file_content = repository.get_contents(selectedFileName)
                     selectedCode = file_content.decoded_content.decode()
-                    print(selectedCode)
+                    content = selectedCode
                 
 
 with st.expander("Global Variables", expanded=False):
@@ -73,29 +77,6 @@ with st.expander("Global Variables", expanded=False):
     edited_df = st.data_editor(variables_df, num_rows="dynamic",hide_index=False)
 
     st.download_button(label="Download Variables",data= convert_df(edited_df),file_name='variables.csv',mime='text/csv',)
-
-
-with st.expander("Upload Code", expanded=False):
-    uploaded_file = st.file_uploader("Open .py file:")
-    placeholder = "Write python code here..."
-    if uploaded_file is not None:
-        stringio = StringIO(uploaded_file.getvalue().decode("utf-8"))
-        text = stringio.read()
-        selectedCode = text
-
-content = st_ace(value=selectedCode, font_size=11, wrap=True)
-
-std = st_deferrer()
-
-console = Console(std,startup="startup.py")
-
-
-
-def replaceVariables(text):
-    result = text 
-    for i in edited_df.index:
-        result = result.replace("{{" + edited_df['Name'][i] + "}}",edited_df['Value'][i])
-    return result
 
 saveFileName = st.text_input('File Name',selectedFileName)
 
@@ -111,12 +92,36 @@ if selectedRepoName is not None:
                 contents = repo.get_contents(saveFileName)
                 selectedFileName = saveFileName
                 repo.update_file(contents.path, "committing files", content, contents.sha, branch="main")
-         
 
-if st.button('Run Code'):
-    content += "\n__createDownload()"
+
+std = st_deferrer()
+
+console = Console(std,startup="startup.py")
+content = ""
+
+
+btn_settings_editor_btns = [{
+  
+    "name": "Run",
+    "feather": "Play",
+    "primary": True,
+    "hasText": True,
+    "showWithIcon": True,
+    "commands": ["submit"],
+    "style": {"bottom": "0rem", "right": "0.4rem"}
+  }
+  ]
+
+response_dict  = code_editor(selectedCode, height = [5, 16],lang="python", buttons=btn_settings_editor_btns)
+if response_dict['type'] == "submit" and len(response_dict['text']) != 0:
+    content = response_dict['text']
     newCode = replaceVariables(content)
     console.run(newCode)
+
+
+         
+
+
 
 
 

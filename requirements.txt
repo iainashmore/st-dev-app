@@ -31,3 +31,4 @@ odfpy
 typing_extensions
 pygithub
 streamlit-ace
+streamlit_code_editor
