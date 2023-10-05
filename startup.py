@@ -1,4 +1,4 @@
-
+#conda activate streamlit_env
 import streamlit as st
 import pandas as pd
 import requests as rq
