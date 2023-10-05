@@ -30,3 +30,4 @@ python-docx
 odfpy
 typing_extensions
 pygithub
+streamlit-ace
