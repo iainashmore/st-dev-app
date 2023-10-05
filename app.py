@@ -17,7 +17,7 @@ g = None
 st.set_page_config(page_title="Moving Python", page_icon=None, layout="wide", initial_sidebar_state="auto", menu_items=None)
 
 
-st.title("Python Development App")
+st.title("Python Dev App")
 variables_df = pd.DataFrame(columns=['Name','Value'])
 fileNames = []
 repoNames = []
